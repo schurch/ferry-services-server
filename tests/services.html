@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-gb"><head>
+	<title>CalMac Services | CalMac Services</title>
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1" /><link href="/themes/disruptionsapp/css/style.css" rel="stylesheet" type="text/css" /><link href="/themes/disruptionsapp/scripts/jquery-mobile/css/themes/default/jquery.mobile.min.css" rel="stylesheet" type="text/css" /><script type="text/javascript" src="/scripts/jquery.js"></script><script type="text/javascript" src="/themes/disruptionsapp/scripts/jquery-mobile/jquery.mobile.js"></script><script type="text/javascript" src="/themes/disruptionsapp/scripts/javascript.js"></script></head>
+
+<body>
+	<div data-role="page">
+
+		<div class="main">
+				<div data-role="header"><a href="/about.html" data-icon="info">About</a>
+					<h1>CalMac Services</h1>
+						<a href="#" data-icon="refresh" class="ui-btn-right refresh">Refresh</a>
+				</div>
+
+			<div data-role="content">
+	
+		<script type="text/javascript">
+ 			/* <![CDATA[ */
+		    	$(document).ready(function() {
+		    		
+		    		function updateRoutes(routeArr) {
+		    			$.mobile.loading('show');
+		    			var $img;
+		    			for (var i=0; i<routeArr.length; i++) {
+		    				$img = $('.i' + routeArr[i].code);
+		    				if ($img) {
+		    					var newSrc = $img.attr('src').replace(/[a-z\-]+\.png$/gi, routeArr[i].image);
+		    					$('.i' + routeArr[i].code).attr('src', newSrc);
+		    				}
+		    				
+		    			}
+		    			
+		    			$('.timestamp').html(dateStamp(new Date()));
+		    			$.mobile.loading('hide');
+		    		}
+
+		    		function refreshRoutes() {
+	 					$.ajax('/?ajax=json', {
+							success: function (data) {
+								updateRoutes(data);
+							}
+						});
+	 				}
+		    		
+		    		function favSwitchChange() {
+		    			
+		    			var code = $(this).attr('id').replace(/^fav\-/gi, '');
+		    			var favs = localStorage.favs ? localStorage.favs.split(',') : [];
+		    			
+		    			if ($(this).val() == 'Yes' && favs.indexOf(code) === -1) {
+		    				favs.push(code);
+		    			} else if (favs.indexOf(code) > -1) {
+		    				favs.splice(favs.indexOf(code), 1);
+		    			}
+		    			
+		    			localStorage.favs = favs.join(',');
+		    			updateFavs();
+		    		}
+		    		
+		    		function updateFavs() {
+		    			if ($('.fav-route')) {
+		    				$('.fav-route').remove();
+		    			}
+		    			
+		    			var favs = localStorage.favs ? localStorage.favs.split(',') : [];
+		    			
+		    			var $favheader = $('#favheader');
+		    			var $allRoutesHeader = $('#allroutesheader');
+		    			
+		    			if (favs.length === 0) {
+		    				$favheader.toggle(false);
+		    				$allRoutesHeader.find('span.title').html('All routes');
+		    			} else {
+		    				$favheader.toggle(true);
+		    				$allRoutesHeader.find('span.title').html('Other routes');
+		    			}
+		    			
+		    			var $routes = $('.route').each(function() {
+		    				var code = $(this).attr('id').replace(/r/gi, '');
+		    				
+		    				if (favs.indexOf(code) > -1) {
+		    					$(this).toggle(false);
+		    					
+		    					$favLi = $('<li>');
+		    					$favLi.addClass('fav-route ui-li-has-alt ui-li-has-thumb');
+		    					$favLi.html($(this).html());
+		    					$allRoutesHeader.before($favLi);
+		    					
+		    					$('#fav-' + code).off('change').val('Yes').flipswitch('refresh').on('change', favSwitchChange);
+		    				} else {
+		    					$(this).toggle(true);
+		    					
+		    					$('#fav-' + code).off('change').val('No').flipswitch('refresh').on('change', favSwitchChange);
+		    				}
+		    			});
+		    		}
+		    		
+		    		function dateStamp(date) {
+		    		    date = new Date(date);
+		    		    return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes() + ' ' + (date.getDate() < 10 ? '0' : '') + date.getDate() + '/' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '/' + date.getFullYear();
+		    		}
+		    		
+		    		var isLocalStorage = (function() {
+		                try {
+		                    return 'localStorage' in window && window.localStorage !== null;
+		                } catch (e) {
+		                    return false;
+		                }
+		            })();
+		    		
+		    		$('.refresh').click(function() {
+		    			refreshRoutes();
+		    		});
+		    		
+		    		if (isLocalStorage) {
+			    		$('.fav-switch').change(favSwitchChange);
+		    		} else {
+		    			$('.fav-switch').attr('disabled', 'disabled');
+		    		}
+		    		
+		    		updateRoutes([{"id":"ROUTE_14","reported":"1428268571790","destName":"ARDNAMURCHAN","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"14","routeName":"Tobermory - Kilchoan","webDetail":""},{"id":"ROUTE_05","reported":"1428268571790","destName":"ARRAN","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"05","routeName":"Ardrossan - Brodick","webDetail":""},{"id":"ROUTE_06","reported":"1427799369547","destName":"ARRAN","updated":"1428008363487","infoMsg":"<p>Argyll &amp; Bute Council, Roads &amp; Amenity Services have introduced a temporary 18T MGW weight restriction on the B8001 Redhouse - Skipness Road, to safeguard the road and road users. The weight restriction is required due to land slippage which has caused structural damage to the road. This temporary weight restriction has been put in place under emergency powers until the 24 April 2015. This allows time to introduce a temporary traffic order which is expected to be in place till the 23 October 2015 or until such time repairs are complete.<br><\/p>","reason":"NONE","status":"NORMAL","image":"green-info.png","code":"06","routeName":"Claonaig - Lochranza (NB: summer only)","webDetail":""},{"id":"ROUTE_21","reported":"1428268571790","destName":"BARRA and ERISKAY","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"21","routeName":"Ardmhor (Barra) - Eriskay (Sound of Barra)","webDetail":""},{"id":"ROUTE_20","reported":"1428268571790","destName":"BARRA and SOUTH UIST","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"20","routeName":"Oban - Lochboisdale , Oban - Castlebay","webDetail":""},{"id":"ROUTE_03","reported":"1428268571790","destName":"BUTE","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"03","routeName":"Wemyss Bay - Rothesay","webDetail":""},{"id":"ROUTE_04","reported":"1428268571790","destName":"BUTE","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"04","routeName":"Colintraive - Rhubodach","webDetail":""},{"id":"ROUTE_16","reported":"1428268571790","destName":"COLL and TIREE","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"16","routeName":"Oban - Coll - Tiree","webDetail":""},{"id":"ROUTE_10","reported":"1428268571790","destName":"COLONSAY","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"10","routeName":"Oban - Colonsay - Port Askaig - Kennacraig","webDetail":""},{"id":"ROUTE_02","reported":"1427712963673","destName":"COWAL and KINTYRE","updated":"1428238984514","infoMsg":"<span style=\"font-weight: bold; text-decoration: underline;\">Claonaig \/ Lochranza&nbsp;\r\n<\/span><p><br><\/p><p>Argyll &amp; Bute Council, Roads &amp; Amenity Services have introduced a temporary 18T MGW weight restriction on the B8001 Redhouse - Skipness Road, to safeguard the road and road users. The weight restriction is required due to land slippage which has caused structural damage to the road. This temporary weight restriction has been put in place under emergency powers until the 24 April 2015. This allows time to introduce a temporary traffic order which is expected to be in place till the 23 October 2015 or until such time repairs are complete.<\/p>","reason":"NONE","status":"NORMAL","image":"green-info.png","code":"02","routeName":"Tarbert (Loch Fyne) - Portavadie","webDetail":""},{"id":"ROUTE_07","reported":"1428267236773","destName":"CUMBRAE","updated":"1428267615290","infoMsg":null,"reason":"technical reasons","status":"AFFECTED","image":"orange.png","code":"07","routeName":"Largs - Millport (Cumbrae Slip)","webDetail":"<span style=\"font-weight: bold; text-decoration: underline;\">Monday 6th April&nbsp;<\/span><p>Due to technical issue there will be a smaller vessel operating with reduced vehicle carrying capacity, so lengthy delays are to be expected.<\/p><p>We apologise for the disruption this causes for our customers and thank you for your patience.<\/p>"},{"id":"ROUTE_08","reported":"1428268571790","destName":"GIGHA","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"08","routeName":"Tayinloan - Gigha","webDetail":""},{"id":"ROUTE_24","reported":"1428268571790","destName":"HARRIS","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"24","routeName":"Uig - Tarbert (Harris)","webDetail":""},{"id":"ROUTE_13","reported":"1426266215393","destName":"IONA","updated":"1427883573827","infoMsg":"<p><br><\/p><p>Essential repair works will be taking place on Iona Slipway on the following dates:&nbsp;<br><\/p><p><br><\/p><p><span style=\"font-weight: bold;\">15th to 23rd April&nbsp;<\/span><\/p><p><span style=\"font-weight: bold;\">2nd to 8th May&nbsp;\r\n<\/span><\/p><p><br><\/p><p>During these periods some sailings each day will operate as passenger only sailings. There will still be vehicle services operating but these will not operate to the same frequency, with a smaller vessel carrying out the passenger only sailings.&nbsp;<br><\/p><p><br><\/p><p>The times of the passenger only sailings will vary due to tidal conditions, so please ensure that you check before you travel. You can see times for both vehicle and passenger sailings and passenger only sailings during the time of the works at www.calmac.co.uk\/ionaslipway&nbsp;<br><\/p><p><br><\/p><p>As we will have a smaller vessel for these passenger only sailings, disabled access is limited and passengers may wish to travel on the vehicle sailings when our usual vessel is operating&nbsp;<br><\/p>","reason":"NONE","status":"NORMAL","image":"green-info.png","code":"13","routeName":"Fionnphort - Iona","webDetail":""},{"id":"ROUTE_09","reported":"1428268571790","destName":"ISLAY","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"09","routeName":"Kennacraig - Port Askaig, Kennacraig - Port Ellen","webDetail":""},{"id":"ROUTE_25","reported":"1428268571790","destName":"LEWIS","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"25","routeName":"Ullapool - Stornoway","webDetail":""},{"id":"ROUTE_35","reported":"1428268571790","destName":"LEWIS FREIGHT","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"35","routeName":"Freight Ullapool -Stornoway ","webDetail":""},{"id":"ROUTE_15","reported":"1428268571790","destName":"LISMORE","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"15","routeName":"Oban - Lismore","webDetail":""},{"id":"ROUTE_11","reported":"1428268571790","destName":"MULL","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"11","routeName":"Oban - Craignure","webDetail":""},{"id":"ROUTE_12","reported":"1428268571790","destName":"MULL","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"12","routeName":"Lochaline - Fishnish","webDetail":""},{"id":"ROUTE_22","reported":"1428268571790","destName":"NORTH UIST","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"22","routeName":"Uig - Lochmaddy","webDetail":""},{"id":"ROUTE_23","reported":"1428126028230","destName":"NORTH UIST and HARRIS","updated":"1428267562289","infoMsg":null,"reason":"tidal conditions","status":"AFFECTED","image":"orange.png","code":"23","routeName":"Berneray - Leverburgh (Sound of Harris)","webDetail":"Due to tidal conditions the following amended timetable will operate :-&nbsp;<p><span style=\"font-weight: bold; text-decoration: underline;\">Monday 6th April<\/span>&nbsp;<br><\/p><p>Depart Berneray\t07:15&nbsp;<\/p><p>Depart Leverburgh\t08:25&nbsp;<\/p><p>Depart Berneray\t10:25&nbsp;<\/p><p>Depart Leverburgh\t11:40&nbsp;<\/p><p>Depart Berneray\t17:20&nbsp;<\/p><p>Depart Leverburgh\t18:30<br><\/p><p><br><\/p>"},{"id":"ROUTE_17","reported":"1428268571790","destName":"RAASAY","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"17","routeName":"Sconser-Raasay","webDetail":""},{"id":"ROUTE_18","reported":"1428268571790","destName":"SKYE","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"18","routeName":"Mallaig - Armadale","webDetail":""},{"id":"ROUTE_19","reported":"1428268571790","destName":"SMALL ISLES","updated":"1428268571790","infoMsg":null,"reason":"NONE","status":"NORMAL","image":"green.png","code":"19","routeName":"Mallaig - Canna, Mallaig - Eigg, Mallaig - Muck, Mallaig - Rum","webDetail":""}]);
+		    		updateFavs();
+		    	});
+ 			/* ]]> */
+ 		</script>
+			<form>
+				<input id="filter-for-listview" data-type="search" placeholder="Filter routes..." />
+			</form>
+			<ul data-role="listview" data-split-icon="gear" data-split-theme="a" data-inset="true" data-filter="true" data-input="#filter-for-listview">
+				<li id="favheader" data-role="list-divider">
+					Favourite routes
+					<p class="ui-li-aside">Updated: <span class="timestamp"></span></p>
+				</li>
+				<li class="fav-route"></li>
+				<li id="allroutesheader" data-role="list-divider">
+					<span class="title">All routes</span>
+					<p class="ui-li-aside">Updated: <span class="timestamp"></span></p>
+				</li>
+					<li id="r14" class="route"><a href="/?route=14">
+							<img class="i14" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>ARDNAMURCHAN</h2>
+							<p>Tobermory - Kilchoan</p></a>
+						<a href="#r14-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r05" class="route"><a href="/?route=05">
+							<img class="i05" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>ARRAN</h2>
+							<p>Ardrossan - Brodick</p></a>
+						<a href="#r05-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r06" class="route"><a href="/?route=06">
+							<img class="i06" src="/themes/disruptionsapp/images/servicestatusicons/green-info.png" />						
+							<h2>ARRAN</h2>
+							<p>Claonaig - Lochranza (NB: summer only)</p></a>
+						<a href="#r06-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r21" class="route"><a href="/?route=21">
+							<img class="i21" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>BARRA and ERISKAY</h2>
+							<p>Ardmhor (Barra) - Eriskay (Sound of Barra)</p></a>
+						<a href="#r21-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r20" class="route"><a href="/?route=20">
+							<img class="i20" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>BARRA and SOUTH UIST</h2>
+							<p>Oban - Lochboisdale , Oban - Castlebay</p></a>
+						<a href="#r20-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r03" class="route"><a href="/?route=03">
+							<img class="i03" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>BUTE</h2>
+							<p>Wemyss Bay - Rothesay</p></a>
+						<a href="#r03-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r04" class="route"><a href="/?route=04">
+							<img class="i04" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>BUTE</h2>
+							<p>Colintraive - Rhubodach</p></a>
+						<a href="#r04-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r16" class="route"><a href="/?route=16">
+							<img class="i16" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>COLL and TIREE</h2>
+							<p>Oban - Coll - Tiree</p></a>
+						<a href="#r16-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r10" class="route"><a href="/?route=10">
+							<img class="i10" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>COLONSAY</h2>
+							<p>Oban - Colonsay - Port Askaig - Kennacraig</p></a>
+						<a href="#r10-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r02" class="route"><a href="/?route=02">
+							<img class="i02" src="/themes/disruptionsapp/images/servicestatusicons/green-info.png" />						
+							<h2>COWAL and KINTYRE</h2>
+							<p>Tarbert (Loch Fyne) - Portavadie</p></a>
+						<a href="#r02-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r07" class="route"><a href="/?route=07">
+							<img class="i07" src="/themes/disruptionsapp/images/servicestatusicons/orange.png" />						
+							<h2>CUMBRAE</h2>
+							<p>Largs - Millport (Cumbrae Slip)</p></a>
+						<a href="#r07-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r08" class="route"><a href="/?route=08">
+							<img class="i08" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>GIGHA</h2>
+							<p>Tayinloan - Gigha</p></a>
+						<a href="#r08-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r24" class="route"><a href="/?route=24">
+							<img class="i24" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>HARRIS</h2>
+							<p>Uig - Tarbert (Harris)</p></a>
+						<a href="#r24-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r13" class="route"><a href="/?route=13">
+							<img class="i13" src="/themes/disruptionsapp/images/servicestatusicons/green-info.png" />						
+							<h2>IONA</h2>
+							<p>Fionnphort - Iona</p></a>
+						<a href="#r13-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r09" class="route"><a href="/?route=09">
+							<img class="i09" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>ISLAY</h2>
+							<p>Kennacraig - Port Askaig, Kennacraig - Port Ellen</p></a>
+						<a href="#r09-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r25" class="route"><a href="/?route=25">
+							<img class="i25" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>LEWIS</h2>
+							<p>Ullapool - Stornoway</p></a>
+						<a href="#r25-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r35" class="route"><a href="/?route=35">
+							<img class="i35" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>LEWIS FREIGHT</h2>
+							<p>Freight Ullapool -Stornoway </p></a>
+						<a href="#r35-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r15" class="route"><a href="/?route=15">
+							<img class="i15" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>LISMORE</h2>
+							<p>Oban - Lismore</p></a>
+						<a href="#r15-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r11" class="route"><a href="/?route=11">
+							<img class="i11" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>MULL</h2>
+							<p>Oban - Craignure</p></a>
+						<a href="#r11-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r12" class="route"><a href="/?route=12">
+							<img class="i12" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>MULL</h2>
+							<p>Lochaline - Fishnish</p></a>
+						<a href="#r12-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r22" class="route"><a href="/?route=22">
+							<img class="i22" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>NORTH UIST</h2>
+							<p>Uig - Lochmaddy</p></a>
+						<a href="#r22-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r23" class="route"><a href="/?route=23">
+							<img class="i23" src="/themes/disruptionsapp/images/servicestatusicons/orange.png" />						
+							<h2>NORTH UIST and HARRIS</h2>
+							<p>Berneray - Leverburgh (Sound of Harris)</p></a>
+						<a href="#r23-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r17" class="route"><a href="/?route=17">
+							<img class="i17" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>RAASAY</h2>
+							<p>Sconser-Raasay</p></a>
+						<a href="#r17-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r18" class="route"><a href="/?route=18">
+							<img class="i18" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>SKYE</h2>
+							<p>Mallaig - Armadale</p></a>
+						<a href="#r18-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+					<li id="r19" class="route"><a href="/?route=19">
+							<img class="i19" src="/themes/disruptionsapp/images/servicestatusicons/green.png" />						
+							<h2>SMALL ISLES</h2>
+							<p>Mallaig - Canna, Mallaig - Eigg, Mallaig - Muck, Mallaig - Rum</p></a>
+						<a href="#r19-popup" data-rel="popup" data-position-to="window" data-transition="pop">Settings</a>
+					</li>
+			</ul>
+				<div data-role="popup" id="r14-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>14 ARDNAMURCHAN</h3>
+					<p>Tobermory - Kilchoan</p>
+					<form>
+					    <label for="fav-14">Favourite:</label>
+						<select id="fav-14" name="fav-14" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/tobermory-kilchoan-ardnamurchan-mull-ferry-summer-timetable">Ardnamurchan and Mull: Tobermory - Kilchoan</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r05-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>05 ARRAN</h3>
+					<p>Ardrossan - Brodick</p>
+					<form>
+					    <label for="fav-05">Favourite:</label>
+						<select id="fav-05" name="fav-05" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/ardrossan-brodick-arran-ferry-summer-timetable">Arran: Ardrossan - Brodick</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r06-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>06 ARRAN</h3>
+					<p>Claonaig - Lochranza (NB: summer only)</p>
+					<form>
+					    <label for="fav-06">Favourite:</label>
+						<select id="fav-06" name="fav-06" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/claonaig-lochranza-arran-summer-timetable">Arran: Claonaig - Lochranza</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r21-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>21 BARRA and ERISKAY</h3>
+					<p>Ardmhor (Barra) - Eriskay (Sound of Barra)</p>
+					<form>
+					    <label for="fav-21">Favourite:</label>
+						<select id="fav-21" name="fav-21" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/barra-eriskay-ferry-summer-timetable">Barra &amp; Eriskay: Barra - Eriskay (Sound of Barra)</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r20-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>20 BARRA and SOUTH UIST</h3>
+					<p>Oban - Lochboisdale , Oban - Castlebay</p>
+					<form>
+					    <label for="fav-20">Favourite:</label>
+						<select id="fav-20" name="fav-20" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/oban-lochboisdale-southuist-summer-timetable">South Uist: Oban - Lochboisdale</a>
+									</li>
+									<li><a href="/oban-castlebay-barra-ferry-summer-timetable">Barra: Oban - Castlebay</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r03-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>03 BUTE</h3>
+					<p>Wemyss Bay - Rothesay</p>
+					<form>
+					    <label for="fav-03">Favourite:</label>
+						<select id="fav-03" name="fav-03" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/wemyssbay-rothesay-bute-ferry-summer-timetable">Bute: Wemyss Bay - Rothesay</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r04-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>04 BUTE</h3>
+					<p>Colintraive - Rhubodach</p>
+					<form>
+					    <label for="fav-04">Favourite:</label>
+						<select id="fav-04" name="fav-04" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/colintraive-rhubodach-bute-ferry-summer-timetable">Bute: Colintraive - Rhubodach</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r16-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>16 COLL and TIREE</h3>
+					<p>Oban - Coll - Tiree</p>
+					<form>
+					    <label for="fav-16">Favourite:</label>
+						<select id="fav-16" name="fav-16" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/oban-coll-tiree-ferry-summer-timetable">Coll &amp; Tiree: Oban - Coll - Tiree</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r10-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>10 COLONSAY</h3>
+					<p>Oban - Colonsay - Port Askaig - Kennacraig</p>
+					<form>
+					    <label for="fav-10">Favourite:</label>
+						<select id="fav-10" name="fav-10" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/oban-colonsay-portaskaig-kennacraig-colonsay-ferry-summer-timetable">Colonsay: Oban-Colonsay-Port Askaig-Kennacraig</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r02-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>02 COWAL and KINTYRE</h3>
+					<p>Tarbert (Loch Fyne) - Portavadie</p>
+					<form>
+					    <label for="fav-02">Favourite:</label>
+						<select id="fav-02" name="fav-02" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/tarbert-portavadie-ferry-summer-timetable">Cowal &amp; Kintyre: Tarbert Loch Fyne - Portavadie</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r07-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>07 CUMBRAE</h3>
+					<p>Largs - Millport (Cumbrae Slip)</p>
+					<form>
+					    <label for="fav-07">Favourite:</label>
+						<select id="fav-07" name="fav-07" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/largs-cumbraeslip-cumbrae-ferry-summer-timetable">Cumbrae: Largs - Cumbrae Slip</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r08-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>08 GIGHA</h3>
+					<p>Tayinloan - Gigha</p>
+					<form>
+					    <label for="fav-08">Favourite:</label>
+						<select id="fav-08" name="fav-08" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/tayinloan-gigha-gigha-ferry-summer-timetable">Gigha: Tayinloan - Gigha</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r24-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>24 HARRIS</h3>
+					<p>Uig - Tarbert (Harris)</p>
+					<form>
+					    <label for="fav-24">Favourite:</label>
+						<select id="fav-24" name="fav-24" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/uig-tarbert-harris-ferry-summer-timetable">Harris: Uig - Tarbert</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r13-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>13 IONA</h3>
+					<p>Fionnphort - Iona</p>
+					<form>
+					    <label for="fav-13">Favourite:</label>
+						<select id="fav-13" name="fav-13" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/fionnphort-iona-iona-ferry-summer-timetable">Iona: Fionnphort-Iona</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r09-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>09 ISLAY</h3>
+					<p>Kennacraig - Port Askaig, Kennacraig - Port Ellen</p>
+					<form>
+					    <label for="fav-09">Favourite:</label>
+						<select id="fav-09" name="fav-09" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/kennacraig-portellen-portaskaig-islay-ferry-summer-timetable">Islay: Kennacraig - Port Ellen/Port Askaig</a>
+									</li>
+									<li><a href="/kennacraig-portellen-portaskaig-islay-ferry-summer-timetable">Islay: Kennacraig - Port Ellen/Port Askaig</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r25-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>25 LEWIS</h3>
+					<p>Ullapool - Stornoway</p>
+					<form>
+					    <label for="fav-25">Favourite:</label>
+						<select id="fav-25" name="fav-25" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/stornoway-ullapool-lewis-ferry-summer-timetable">Lewis: Stornoway - Ullapool</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r35-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>35 LEWIS FREIGHT</h3>
+					<p>Freight Ullapool -Stornoway </p>
+					<form>
+					    <label for="fav-35">Favourite:</label>
+						<select id="fav-35" name="fav-35" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+						</ul>
+				</div>
+				<div data-role="popup" id="r15-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>15 LISMORE</h3>
+					<p>Oban - Lismore</p>
+					<form>
+					    <label for="fav-15">Favourite:</label>
+						<select id="fav-15" name="fav-15" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/oban-lismore-lismore-ferry-summer-timetable">Lismore: Oban - Lismore</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r11-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>11 MULL</h3>
+					<p>Oban - Craignure</p>
+					<form>
+					    <label for="fav-11">Favourite:</label>
+						<select id="fav-11" name="fav-11" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/oban-craignure-mull-ferry-summer-timetable">Mull: Oban - Craignure</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r12-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>12 MULL</h3>
+					<p>Lochaline - Fishnish</p>
+					<form>
+					    <label for="fav-12">Favourite:</label>
+						<select id="fav-12" name="fav-12" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/lochaline-fishnish-mull-ferry-summer-timetable">Mull: Lochaline - Fishnish</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r22-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>22 NORTH UIST</h3>
+					<p>Uig - Lochmaddy</p>
+					<form>
+					    <label for="fav-22">Favourite:</label>
+						<select id="fav-22" name="fav-22" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/uig-lochmaddy-northuist-ferry-summer-timetable">North Uist: Uig - Lochmaddy</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r23-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>23 NORTH UIST and HARRIS</h3>
+					<p>Berneray - Leverburgh (Sound of Harris)</p>
+					<form>
+					    <label for="fav-23">Favourite:</label>
+						<select id="fav-23" name="fav-23" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/berneray-leverburgh-northuist-harris-ferry-summer-timetable">North Uist and Harris: Berneray - Leverburgh (Sound of Harris)</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r17-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>17 RAASAY</h3>
+					<p>Sconser-Raasay</p>
+					<form>
+					    <label for="fav-17">Favourite:</label>
+						<select id="fav-17" name="fav-17" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/sconser-raasay-ferry-summer-timetable">Raasay: Sconser - Raasay</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r18-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>18 SKYE</h3>
+					<p>Mallaig - Armadale</p>
+					<form>
+					    <label for="fav-18">Favourite:</label>
+						<select id="fav-18" name="fav-18" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/mallaig-armadale-skye-ferry-summer-timetable">Skye: Mallaig - Armadale</a>
+									</li>
+						</ul>
+				</div>
+				<div data-role="popup" id="r19-popup" data-theme="a" data-overlay-theme="b" class="ui-content" style="width:310px;">
+					<a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+				    <h3>19 SMALL ISLES</h3>
+					<p>Mallaig - Canna, Mallaig - Eigg, Mallaig - Muck, Mallaig - Rum</p>
+					<form>
+					    <label for="fav-19">Favourite:</label>
+						<select id="fav-19" name="fav-19" data-role="flipswitch" class="fav-switch">
+							<option>No</option>
+							<option>Yes</option>
+						</select>
+					</form>
+						<ul>
+									<li><a href="/mallaig-eigg-muck-rum-canna-smallisles-summer-timetable">Small Isles: Mallaig - Eigg - Muck - Rum - Canna</a>
+									</li>
+									<li><a href="/mallaig-eigg-muck-rum-canna-smallisles-summer-timetable">Small Isles: Mallaig - Eigg - Muck - Rum - Canna</a>
+									</li>
+									<li><a href="/mallaig-eigg-muck-rum-canna-smallisles-summer-timetable">Small Isles: Mallaig - Eigg - Muck - Rum - Canna</a>
+									</li>
+									<li><a href="/mallaig-eigg-muck-rum-canna-smallisles-summer-timetable">Small Isles: Mallaig - Eigg - Muck - Rum - Canna</a>
+									</li>
+						</ul>
+				</div>
+				
+				<!-- default asset placeholder for features -->
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
