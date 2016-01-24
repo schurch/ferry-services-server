@@ -7,15 +7,15 @@ RSpec.describe Scraper do
 	before(:each) do
 		FakeWeb.allow_net_connect = false
 
-		services_html_path = File.expand_path("../services.html", __FILE__)
+		services_html_path = File.expand_path("../data/services.html", __FILE__)
 		services_stream = File.read(services_html_path)
 		FakeWeb.register_uri(:get, "http://status.calmac.info", :body => services_stream, :content_type => "text/html")
 
-		arran_html_path = File.expand_path("../arran.html", __FILE__)
+		arran_html_path = File.expand_path("../data/arran.html", __FILE__)
 		arran_stream = File.read(arran_html_path)
 		FakeWeb.register_uri(:get, %r|http://status\.calmac\.info/\?route=(?!07)(.)+|, :body => arran_stream, :content_type => "text/html")
 
-		cumbrae_html_path = File.expand_path("../cumbrae.html", __FILE__)
+		cumbrae_html_path = File.expand_path("../data/cumbrae.html", __FILE__)
 		cumbrae_stream = File.read(cumbrae_html_path)
 		FakeWeb.register_uri(:get, %r|http://status\.calmac\.info/\?route=07|, :body => cumbrae_stream, :content_type => "text/html")
 	end
@@ -27,7 +27,7 @@ RSpec.describe Scraper do
 			expect(services.first).to be_instance_of(Service)
 		end
 
-		it "has required fields" do 
+		it "has required fields" do
 			scraper = Scraper.new(Scraper::CALMAC_ENDPOINT)
 			services = scraper.scrape()
 			services.each { |s|
@@ -40,7 +40,7 @@ RSpec.describe Scraper do
 			}
 		end
 
-		it "has a readable description" do 
+		it "has a readable description" do
 			scraper = Scraper.new(Scraper::CALMAC_ENDPOINT)
 			services = scraper.scrape()
 			arran_service = services[2]
@@ -55,7 +55,7 @@ RSpec.describe Scraper do
 			expect(services.length).to be == 25
 		end
 
-		it "has Arran (Lochranza - Claonaig) at index 2" do 
+		it "has Arran (Lochranza - Claonaig) at index 2" do
 			scraper = Scraper.new(Scraper::CALMAC_ENDPOINT)
 			services = scraper.scrape()
 			arran_service = services[2]
@@ -72,7 +72,7 @@ RSpec.describe Scraper do
 			scraper = Scraper.new(Scraper::CALMAC_ENDPOINT)
 			services = scraper.scrape()
 			arran_service = services[2]
-			
+
 			expect(arran_service.additional_info).to include('<p>Argyll &amp; Bute Council, Roads &amp; Amenity Services have introduced a temporary 18T MGW weight restriction on the B8001 Redhouse - Skipness Road, to safeguard the road and road users. The weight restriction is required due to land slippage which has caused structural damage to the road. This temporary weight restriction has been put in place under emergency powers until the 24 April 2015. This allows time to introduce a temporary traffic order which is expected to be in place till the 23 October 2015 or until such time repairs are complete.<br></p>')
 		end
 
