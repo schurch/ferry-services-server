@@ -4,6 +4,7 @@ require 'yaml'
 require 'mysql2'
 
 require_relative 'service'
+require_relative 'vessel'
 
 get '/services/' do
 	content_type :json
@@ -42,6 +43,26 @@ get '/services/:id' do
 		'disruption_reason' => db_service.disruption_reason,
 		'disruption_date' => db_service.disruption_date,
 		'disruption_details' => db_service.disruption_details
+	}.to_json
+end
+
+get '/vessels/' do
+	content_type :json
+
+	client = client = Mysql2::Client.new(database_config)
+	db_services = Vessel.fetch_all(client)
+
+	db_services.map { |vessel|
+		{
+			'mmsi' => vessel.mmsi,
+			'name' => vessel.name,
+			'updated' => vessel.updated,
+			'latitude' => vessel.latitude,
+			'longitude' => vessel.longitude,
+			'speed' => vessel.speed,
+			'course' => vessel.course,
+			'status' => vessel.status
+		}
 	}.to_json
 end
 
