@@ -10,8 +10,6 @@ VESSEL_NAME_LOOKUP = {
 }
 
 def fetch_vessels(url)
-	puts "Pulling vessel data from #{url}"
-
 	uri = URI(url)
 	response = Net::HTTP.get(uri)
 	vessels_data = JSON.parse(response)

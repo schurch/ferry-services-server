@@ -9,8 +9,7 @@ require_relative 'vessel'
 get '/services/' do
 	content_type :json
 
-	client = client = Mysql2::Client.new(database_config)
-	db_services = Service.fetch_all(client)
+	db_services = Service.fetch_all(db_client)
 
 	db_services.map { |service|
 		{
@@ -27,8 +26,7 @@ end
 get '/services/:id' do
 	content_type :json
 
-	client = client = Mysql2::Client.new(database_config)
-	db_service = Service.fetch(client, params['id'])
+	db_service = Service.fetch(db_client, params['id'])
 
 	return 'Service does not exist' if !db_service
 
@@ -49,8 +47,7 @@ end
 get '/vessels/' do
 	content_type :json
 
-	client = client = Mysql2::Client.new(database_config)
-	db_services = Vessel.fetch_all(client)
+	db_services = Vessel.fetch_all(db_client)
 
 	db_services.map { |vessel|
 		{
@@ -66,8 +63,8 @@ get '/vessels/' do
 	}.to_json
 end
 
-def database_config
+def db_client
 	yaml = YAML.load_file(ARGV[0])
-	database_settings = yaml['database']
-	Hash[database_settings.map { |k, v| [k.to_sym, v] }]
+	config = Hash[yaml['database'].map { |k, v| [k.to_sym, v] }]
+	Mysql2::Client.new(config)
 end
