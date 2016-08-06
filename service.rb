@@ -10,8 +10,13 @@ class Service
     attr_accessor :service_id, :updated, :sort_order, :area, :route, :status, :additional_info, :disruption_reason, :disruption_date, :disruption_details
 
     def updated=(value)
-    # Make sure that updated is always in utc
-    @updated = value.utc
+        # Make sure that updated is always in utc
+        @updated = value.utc if value
+    end
+
+    def disruption_date=(value)
+        # Make sure that disruption date is always in utc
+        @disruption_date = value.utc if value
     end
 
     def self.fetch_all(client)
@@ -30,17 +35,10 @@ class Service
     end
 
     def self.create_service(row)
-        # Parse dates as UTC
-        updated = row['updated']
-        updated += ' UTC' if updated
-
-        disruption_date = row['disruption_date']
-        disruption_date += ' UTC' if disruption_date
-
-        service = Service.new(row['service_id'].to_i, Time.strptime(updated, '%Y-%m-%d %H:%M:%S %Z'), row['sort_order'].to_i, row['area'], row['route'], row['status'].to_i)
+        service = Service.new(row['service_id'].to_i, Time.at(row['updated']), row['sort_order'].to_i, row['area'], row['route'], row['status'].to_i)
         service.additional_info = row['additional_info']
         service.disruption_reason = row['disruption_reason']
-        service.disruption_date = Time.strptime(disruption_date, '%Y-%m-%d %H:%M:%S %Z') if disruption_date
+        service.disruption_date = Time.at(row['disruption_date'])
         service.disruption_details = row['disruption_details']
 
         if service.updated < Time.now.utc - (30 * 60)
@@ -61,11 +59,10 @@ class Service
     end
 
     def save(client)
-        sql = 'INSERT INTO services (service_id, updated, sort_order, area, route, status, additional_info, disruption_reason, disruption_date, disruption_details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) '\
-        'ON DUPLICATE KEY UPDATE updated = ?, sort_order = ?, area = ?, route = ?, status = ?, additional_info = ?, disruption_reason = ?, disruption_date = ?, disruption_details = ?'
-
+        sql = "INSERT INTO services (service_id, updated, sort_order, area, route, status, additional_info, disruption_reason, disruption_date, disruption_details) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE updated = ?, sort_order = ?, area = ?, route = ?, status = ?, additional_info = ?, disruption_reason = ?, disruption_date = ?, disruption_details = ?;"
+        
         sql_statement = client.prepare(sql)
-        sql_statement.execute(@service_id, @updated, @sort_order, @area, @route, @status, @additional_info, @disruption_reason, @disruption_date, @disruption_details, @updated, @sort_order, @area, @route, @status, @additional_info, @disruption_reason, @disruption_date, @disruption_details)
+        sql_statement.execute(@service_id, @updated.to_i, @sort_order, @area, @route, @status, @additional_info, @disruption_reason, @disruption_date.to_i, @disruption_details, @updated.to_i, @sort_order, @area, @route, @status, @additional_info, @disruption_reason, @disruption_date.to_i, @disruption_details)
     end
 
     def to_s

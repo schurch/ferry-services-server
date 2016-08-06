@@ -98,7 +98,7 @@ class Scraper
         begin
             last_updated_text = service_details_page.search("//p/strong[.='Last Updated']").first.parent.text
             last_updated_text_string = last_updated_text.gsub('Last Updated:', '').strip
-            ActiveSupport::TimeZone['London'].parse(last_updated_text_string).utc
+            ActiveSupport::TimeZone['London'].parse(last_updated_text_string)
         rescue
             nil
         end
@@ -148,7 +148,7 @@ if __FILE__ == $0
 
     scraper.scrape() { |service|
         begin
-            service_notifier.notify_if_required(service)
+            # service_notifier.notify_if_required(service)
             service.save(client)
         rescue Exception => e
             puts e.message

@@ -58,7 +58,8 @@ get '/vessels/' do
             'longitude' => vessel.longitude,
             'speed' => vessel.speed,
             'course' => vessel.course,
-            'status' => vessel.status
+            'status' => vessel.status,
+            'location_updated' => vessel.location_updated
         }
     }.to_json
 end

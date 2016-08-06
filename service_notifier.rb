@@ -17,9 +17,12 @@ class ServiceNotifier
 
         return if !db_service
         return if db_service.status == service.status
+        return if db_service.status == Service::UNKNOWN || service.status == Service::UNKNOWN
 
         channel = "#{ServiceNotifier::CHANNEL_PREFIX}#{service.service_id}"
         push_message = message(service)
+
+        return if push_message.length == 0
 
         data = { :alert => push_message, :service_id => service.service_id, :category => 'disruption' }
         @push_service.push(data, [channel]) if push_message.length > 0

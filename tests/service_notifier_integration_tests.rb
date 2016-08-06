@@ -43,7 +43,7 @@ RSpec.describe ServiceNotifier do
     it "doesn't send a notification if the service doesn't exist in the database" do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service_notifier.notify_if_required(service)
 
         expect(push_service.data).to be_nil
@@ -53,10 +53,10 @@ RSpec.describe ServiceNotifier do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service.save(@client)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
         service_notifier.notify_if_required(service)
 
         expect(push_service.send_channels).to be == ["S7"]
@@ -66,10 +66,38 @@ RSpec.describe ServiceNotifier do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service.save(@client)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service_notifier.notify_if_required(service)
+
+        expect(push_service.data).to be_nil
+        expect(push_service.send_channels).to be_nil
+    end
+
+    it "doesn't notify if new status is unknown" do
+        push_service = MockPushService.new()
+        service_notifier = ServiceNotifier.new(@client, push_service)
+
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service.save(@client)
+
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::UNKNOWN)
+        service_notifier.notify_if_required(service)
+
+        expect(push_service.data).to be_nil
+        expect(push_service.send_channels).to be_nil
+    end
+
+    it "doesn't notify if db status is unknown" do
+        push_service = MockPushService.new()
+        service_notifier = ServiceNotifier.new(@client, push_service)
+
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::UNKNOWN)
+        service.save(@client)
+
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service_notifier.notify_if_required(service)
 
         expect(push_service.data).to be_nil
@@ -80,10 +108,10 @@ RSpec.describe ServiceNotifier do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
         service.save(@client)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service_notifier.notify_if_required(service)
 
         expect(push_service.data[:alert]).to be == "Normal services have resumed for Ardrossan - Brodick"
@@ -96,10 +124,10 @@ RSpec.describe ServiceNotifier do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::NORMAL_SERVICE)
         service.save(@client)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
         service_notifier.notify_if_required(service)
 
         expect(push_service.data[:alert]).to be == "There is a disruption to the service Ardrossan - Brodick"
@@ -112,10 +140,10 @@ RSpec.describe ServiceNotifier do
         push_service = MockPushService.new()
         service_notifier = ServiceNotifier.new(@client, push_service)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_DISRUPTED)
         service.save(@client)
 
-        service = Service.new(7, Time.new(2015, 04, 06, 17, 40), 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_CANCELLED)
+        service = Service.new(7, Time.now.utc, 2, 'Arran', 'Ardrossan - Brodick', Service::SAILINGS_CANCELLED)
         service_notifier.notify_if_required(service)
 
         expect(push_service.data[:alert]).to be == "Sailings have been cancelled for Ardrossan - Brodick"

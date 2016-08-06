@@ -1,4 +1,4 @@
-SELECT mmsi, updated, name, X(location) as latitude, Y(location) as longitude, speed, course, status
+SELECT mmsi, updated, name, X(location) as latitude, Y(location) as longitude, speed, course, status, 
 FROM vessels
 WHERE ST_CONTAINS(ST_Envelope(ST_GeomFromText('LineString(55.709319 -5.021439, 55.638897 -4.817119)')), location);
 

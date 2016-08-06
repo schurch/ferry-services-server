@@ -18,11 +18,11 @@ class Vessel
         UNDEFINED = 15
     end
 
-    attr_accessor :mmsi, :updated, :name, :latitude, :longitude, :speed, :course, :status
+    attr_accessor :mmsi, :updated, :name, :latitude, :longitude, :speed, :course, :status, :location_updated
 
     def self.fetch_all(client)
         vessels = []
-        client.query("SELECT mmsi, updated, name, X(location) as latitude, Y(location) as longitude, speed, course, status FROM vessels").each { |row|
+        client.query("SELECT mmsi, updated, name, X(location) as latitude, Y(location) as longitude, speed, course, status, location_updated FROM vessels").each { |row|
             vessels << create_vessel(row)
         }
 
@@ -30,7 +30,7 @@ class Vessel
     end
 
     def self.create_vessel(row)
-        vessel = Vessel.new(mmsi: row['mmsi'], updated: row['updated'], name: row['name'], latitude: row['latitude'], longitude: row['longitude'])
+        vessel = Vessel.new(mmsi: row['mmsi'], updated: Time.at(row['updated']), name: row['name'], latitude: row['latitude'], longitude: row['longitude'], location_updated: Time.at(row['location_updated']))
         vessel.speed = row['speed']
         vessel.course = row['course']
         vessel.status = row['status']
@@ -38,21 +38,22 @@ class Vessel
         vessel
     end
 
-    def initialize(mmsi: nil, updated: nil, name: nil, latitude: nil, longitude: nil)
+    def initialize(mmsi: nil, updated: nil, name: nil, latitude: nil, longitude: nil, location_updated: nil)
         @mmsi = mmsi
         @updated = updated
         @name = name
         @latitude = latitude
         @longitude = longitude
         @status = Vessel::Status::UNDEFINED
+        @location_updated = location_updated
     end
 
     def save(client)
-        sql = 'INSERT INTO vessels (mmsi, updated, name, location, speed, course, status) VALUES (?, ?, ?, POINT(?, ?), ?, ?, ?) '\
-        'ON DUPLICATE KEY UPDATE updated = ?, name = ?, location = POINT(?, ?), speed = ?, course = ?, status = ?'
+        sql = 'INSERT INTO vessels (mmsi, updated, name, location, speed, course, status, location_updated) VALUES (?, ?, ?, POINT(?, ?), ?, ?, ?, ?) '\
+        'ON DUPLICATE KEY UPDATE updated = ?, name = ?, location = POINT(?, ?), speed = ?, course = ?, status = ?, location_updated = ?'
 
         sql_statement = client.prepare(sql)
-        sql_statement.execute(@mmsi, @updated, @name, @latitude, @longitude, @speed, @course, @status, @updated, @name, @latitude, @longitude, @speed, @course, @status)
+        sql_statement.execute(@mmsi, @updated.to_i, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i, @updated, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i)
     end
 
     def to_s
@@ -66,6 +67,7 @@ class Vessel
         output << "Heading: #{@heading}"
         output << "Course: #{@course}"
         output << "Status: #{@status}"
+        output << "Location updated: #{@location_updated}"
 
         output.join("\n")
     end
