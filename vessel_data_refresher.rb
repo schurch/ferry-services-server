@@ -7,7 +7,7 @@ require 'time'
 require_relative 'vessel'
 
 VESSEL_NAME_LOOKUP = {
-    '235000864' => 'Hebrides'
+    '232001580' => 'Caledonian Isles'
 }
 
 def fetch_vessels(url)
@@ -35,7 +35,7 @@ if __FILE__ == $0
 
     api_key = yaml['marinetraffic']['api_key']
     # api_url = "http://services.marinetraffic.com/api/exportvessels/#{api_key}/timespan:10/protocol:json"
-    api_url = "http://services.marinetraffic.com/api/exportvessel/#{api_key}/timespan:10/protocol:json/mmsi:#{235000864}"
+    api_url = "http://services.marinetraffic.com/api/exportvessel/#{api_key}/timespan:10/protocol:json/mmsi:#{232001580}"
     puts api_url
 
     database_config = Hash[yaml['database'].map { |k, v| [k.to_sym, v] }]

@@ -1,3 +1,5 @@
 Backups/
 config/
 scripts/
+certs/
+docker/

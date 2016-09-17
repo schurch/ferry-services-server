@@ -1,6 +1,10 @@
 require 'mechanize'
 require 'mysql2'
 require 'active_support/core_ext/time'
+# require 'pry'
+
+# Set breakpoint with:
+# binding.pry 
 
 require_relative 'service'
 require_relative 'parse_push_service'
@@ -66,13 +70,15 @@ class Scraper
     end
 
     def extract_status(link)
-        status = link.attributes.search('img[@alt]').first.attributes['alt'].value
+        status = link.attributes.search('img').first.attributes['src'].value.split('/').last
 
         case status
-        when 'CANCELLED' then Service::SAILINGS_CANCELLED
-        when 'AFFECTED' then Service::SAILINGS_DISRUPTED
-        when 'BEWARE' then Service::SAILINGS_DISRUPTED
-        when 'NORMAL' then Service::NORMAL_SERVICE
+        when 'cancelled.png' then Service::SAILINGS_CANCELLED
+        when 'cancelled-info.png' then Service::SAILINGS_CANCELLED
+        when 'affected.png' then Service::SAILINGS_DISRUPTED
+        when 'affected-info.png' then Service::SAILINGS_DISRUPTED
+        when 'normal.png' then Service::NORMAL_SERVICE
+        when 'normal-info.png' then Service::NORMAL_SERVICE
         else Service::UNKNOWN
         end
     end
@@ -142,13 +148,13 @@ if __FILE__ == $0
 
     parse_endpoint = push_service_config[:endpoint]
     parse_applications_id = push_service_config[:application_id]
-    parse_rest_api_key = push_service_config[:rest_api_key]
+    parse_master_key = push_service_config[:master_key]
 
-    service_notifier = ServiceNotifier.new(client, ParsePushService.new(parse_endpoint, parse_applications_id, parse_rest_api_key))
+    service_notifier = ServiceNotifier.new(client, ParsePushService.new(parse_endpoint, parse_applications_id, parse_master_key))
 
     scraper.scrape() { |service|
         begin
-            # service_notifier.notify_if_required(service)
+            service_notifier.notify_if_required(service)
             service.save(client)
         rescue Exception => e
             puts e.message
