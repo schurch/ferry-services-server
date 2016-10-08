@@ -77,6 +77,8 @@ class Scraper
         when 'cancelled-info.png' then Service::SAILINGS_CANCELLED
         when 'affected.png' then Service::SAILINGS_DISRUPTED
         when 'affected-info.png' then Service::SAILINGS_DISRUPTED
+        when 'beware.png' then Service::SAILINGS_DISRUPTED
+        when 'beware-info.png' then Service::SAILINGS_DISRUPTED
         when 'normal.png' then Service::NORMAL_SERVICE
         when 'normal-info.png' then Service::NORMAL_SERVICE
         else Service::UNKNOWN

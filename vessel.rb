@@ -20,6 +20,16 @@ class Vessel
 
     attr_accessor :mmsi, :updated, :name, :latitude, :longitude, :speed, :course, :status, :location_updated
 
+    def updated=(value)
+        # Make sure that updated is always in utc
+        @updated = value.utc if value
+    end
+
+    def location_updated=(value)
+        # Make sure that disruption date is always in utc
+        @location_updated = value.utc if value
+    end
+
     def self.fetch_all(client)
         vessels = []
         client.query("SELECT mmsi, updated, name, X(location) as latitude, Y(location) as longitude, speed, course, status, location_updated FROM vessels").each { |row|
@@ -40,12 +50,12 @@ class Vessel
 
     def initialize(mmsi: nil, updated: nil, name: nil, latitude: nil, longitude: nil, location_updated: nil)
         @mmsi = mmsi
-        @updated = updated
+        @updated = updated.utc
         @name = name
         @latitude = latitude
         @longitude = longitude
         @status = Vessel::Status::UNDEFINED
-        @location_updated = location_updated
+        @location_updated = location_updated.utc
     end
 
     def save(client)
@@ -53,7 +63,7 @@ class Vessel
         'ON DUPLICATE KEY UPDATE updated = ?, name = ?, location = POINT(?, ?), speed = ?, course = ?, status = ?, location_updated = ?'
 
         sql_statement = client.prepare(sql)
-        sql_statement.execute(@mmsi, @updated.to_i, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i, @updated, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i)
+        sql_statement.execute(@mmsi, @updated.to_i, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i, @updated.to_i, @name, @latitude, @longitude, @speed, @course, @status, @location_updated.to_i)
     end
 
     def to_s

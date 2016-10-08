@@ -34,9 +34,8 @@ if __FILE__ == $0
     yaml = YAML.load_file(ARGV[0])
 
     api_key = yaml['marinetraffic']['api_key']
-    # api_url = "http://services.marinetraffic.com/api/exportvessels/#{api_key}/timespan:10/protocol:json"
-    api_url = "http://services.marinetraffic.com/api/exportvessel/#{api_key}/timespan:10/protocol:json/mmsi:#{232001580}"
-    puts api_url
+    api_url = "http://services.marinetraffic.com/api/exportvessels/#{api_key}/timespan:10/protocol:json"
+    # api_url = "http://services.marinetraffic.com/api/exportvessel/#{api_key}/timespan:10/protocol:json/mmsi:#{232001580}"
 
     database_config = Hash[yaml['database'].map { |k, v| [k.to_sym, v] }]
     client = Mysql2::Client.new(database_config)
