@@ -70,7 +70,7 @@ class Scraper
     end
 
     def extract_status(link)
-        status = link.attributes.search('img').first.attributes['src'].value.split('/').last
+        status = link.attributes.search('img').first.attributes['src'].value.split('/').last.split('?').first
 
         case status
         when 'cancelled.png' then Service::SAILINGS_CANCELLED
